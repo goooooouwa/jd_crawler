@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'mechanize'
 require 'pry'
 
@@ -49,7 +48,7 @@ module Runner
     end
   end
 
-  def self.runner
+  def self.run
     NODE_CONTAINER.each do |parent|
       find_and_save_all_children(parent)
     end
@@ -58,4 +57,4 @@ module Runner
   end
 end
 
-Runner.runner
+Runner.run
