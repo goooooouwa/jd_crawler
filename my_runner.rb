@@ -39,6 +39,7 @@ module Runner
       children_array = parse_result
       NODE_CONTAINER.concat(children_array)
       children_array.each do |child|
+        child["parent_id"] = parent
         find_and_save_all_children(child["id"])
       end
     end
