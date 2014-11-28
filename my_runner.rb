@@ -23,11 +23,11 @@ module Runner
     page = get_page_until_succeed(parent)
 
     begin
-    parse_result = JSON.parse(page.body)
-    puts ">>>>>>>"
-    puts parse_result
-    puts ">>>>>>>"
-    return parse_result
+      parse_result = JSON.parse(page.body)
+      puts ">>>>>>>"
+      puts parse_result
+      puts ">>>>>>>"
+      return parse_result
     rescue => e
       puts e.inspect
       puts "Parse failed. Retrying..."
