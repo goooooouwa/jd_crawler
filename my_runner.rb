@@ -52,8 +52,9 @@ module Runner
     NODE_CONTAINER.each do |parent|
       find_and_save_all_children(parent)
     end
-    puts NODE_CONTAINER
-    # save NODE_CONTAINER
+    File.open("./jd_areas.json", "w") do |file|
+      file.write JSON.generate(NODE_CONTAINER)
+    end
   end
 end
 
