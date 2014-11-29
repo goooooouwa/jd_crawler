@@ -4,7 +4,7 @@ require 'pry'
 module Runner
   URL_PREFIX = "http://d.360buy.com/area/get?fid="
   NODE_CONTAINER = []
-  REJECT_NODES_LIST = []
+  NODE_BLACK_LIST = []
   ALLOWED_DEPTH = 1
   AGENT = Mechanize.new
 
@@ -34,7 +34,7 @@ module Runner
   end
 
   def self.find_and_save_all_children(parent, parent_depth)
-    if REJECT_NODES_LIST.include?(parent)
+    if NODE_BLACK_LIST.include?(parent)
       binding.pry
       return
     end
@@ -53,11 +53,11 @@ module Runner
         end
       elsif parse_result.class == Hash
         puts "Child Rejected and also reject all sublings consequently to reduce time."
-        REJECT_NODES_LIST.push(parse_result)
+        NODE_BLACK_LIST.push(parse_result)
         binding.pry
       elsif parse_result.class == Array and parse_result.empty?
         puts "Child Rejected and also reject all sublings consequently to reduce time."
-        REJECT_NODES_LIST.concat(parse_result)
+        NODE_BLACK_LIST.concat(parse_result)
         binding.pry
       else
         puts "oops"
