@@ -34,7 +34,10 @@ module Runner
   end
 
   def self.find_and_save_all_children(parent, parent_depth)
-    return if REJECT_NODES_LIST.include?(parent)
+    if REJECT_NODES_LIST.include?(parent)
+      binding.pry
+      return
+    end
 
     if (parent_depth >= 0) and (parent_depth <= ALLOWED_DEPTH)
       url = "#{URL_PREFIX}#{parent['id']}"
@@ -48,9 +51,17 @@ module Runner
           child["parent_id"] = parent["id"]
           find_and_save_all_children(child, children_depth)
         end
-      else
+      elsif parse_result.class == Hash
         puts "Child Rejected and also reject all sublings consequently to reduce time."
-        REJECT_NODES_LIST.concat(children_array)
+        REJECT_NODES_LIST.push(parse_result)
+        binding.pry
+      elsif parse_result.class == Array and parse_result.empty?
+        puts "Child Rejected and also reject all sublings consequently to reduce time."
+        REJECT_NODES_LIST.concat(parse_result)
+        binding.pry
+      else
+        puts "oops"
+        binding.pry
       end
     end
   end
