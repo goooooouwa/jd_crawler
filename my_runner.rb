@@ -35,18 +35,21 @@ module Runner
   end
 
   def self.find_and_save_all_children(parent_id)
-    url = "#{URL_PREFIX}#{parent_id}"
-    parse_result = get_page_then_parse_until_succeed(url)
-    if parse_result.class == Array and not parse_result.empty?
-      puts "Accepted"
-      children_array = parse_result
-      LEAF_NODE_CONTAINER.concat(children_array)
-      children_array.each do |child|
-        child["parent_id"] = parent_id
-        find_and_save_all_children(child["id"])
+    if (@@current_depth > 0) and (@@current_depth <= ALLOWED_DEPTH)
+      @@current_depth += 1
+      url = "#{URL_PREFIX}#{parent_id}"
+      parse_result = get_page_then_parse_until_succeed(url)
+      if parse_result.class == Array and not parse_result.empty?
+        puts "Accepted"
+        children_array = parse_result
+        LEAF_NODE_CONTAINER.concat(children_array)
+        children_array.each do |child|
+          child["parent_id"] = parent_id
+          find_and_save_all_children(child["id"])
+        end
+      else
+        puts "Rejected"
       end
-    else
-      puts "Rejected"
     end
   end
 
