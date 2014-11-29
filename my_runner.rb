@@ -3,8 +3,8 @@ require 'pry'
 
 module Runner
   URL_PREFIX = "http://d.360buy.com/area/get?fid="
-  AGENT = Mechanize.new
   NODE_CONTAINER = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,42,43,84]
+  AGENT = Mechanize.new
 
   def self.get_page_until_succeed(url)
     begin
@@ -35,13 +35,15 @@ module Runner
     url = "#{URL_PREFIX}#{parent}"
     parse_result = get_page_then_parse_until_succeed(url)
     if parse_result.class == Array and not parse_result.empty?
-      puts "Accepted Children Array"
+      puts "Accepted"
       children_array = parse_result
       NODE_CONTAINER.concat(children_array)
       children_array.each do |child|
         child["parent_id"] = parent
         find_and_save_all_children(child["id"])
       end
+    else
+      puts "Rejected"
     end
   end
 
