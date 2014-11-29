@@ -53,8 +53,7 @@ module Runner
 
   def self.run
     puts "---------START-----------"
-    root_nodes_json = File.open("./root_nodes.json").read
-    root_nodes = JSON.parse(root_nodes_json)
+    root_nodes = JSON.parse(File.open("./root_nodes.json").read())
     root_nodes.each do |root_node|
       find_and_save_all_children(root_node["id"], 0)
     end
