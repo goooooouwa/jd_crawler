@@ -33,15 +33,15 @@ module Runner
     end
   end
 
-  def self.find_and_save_all_children(parent)
-    url = "#{URL_PREFIX}#{parent}"
+  def self.find_and_save_all_children(parent_id)
+    url = "#{URL_PREFIX}#{parent_id}"
     parse_result = get_page_then_parse_until_succeed(url)
     if parse_result.class == Array and not parse_result.empty?
       puts "Accepted"
       children_array = parse_result
       NODE_CONTAINER.concat(children_array)
       children_array.each do |child|
-        child["parent_id"] = parent
+        child["parent_id"] = parent_id
         find_and_save_all_children(child["id"])
       end
     else
@@ -51,8 +51,8 @@ module Runner
 
   def self.run
     puts "---------START-----------"
-    NODE_CONTAINER.each do |parent|
-      find_and_save_all_children(parent)
+    NODE_CONTAINER.each do |root_node|
+      find_and_save_all_children(root_node)
     end
     File.open("./jd_areas.json", "w") do |file|
       file.write JSON.generate(NODE_CONTAINER)
