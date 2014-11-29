@@ -4,7 +4,7 @@ require 'pry'
 module Runner
   URL_PREFIX = "http://d.360buy.com/area/get?fid="
   ROOT_NODE_CONTAINER = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,42,43,84]
-  LEAF_NODE_CONTAINER = []
+  NODE_CONTAINER = []
   ALLOWED_DEPTH = 1
   AGENT = Mechanize.new
 
@@ -41,7 +41,7 @@ module Runner
         puts "Accepted"
         children_array = parse_result
         children_depth = parent_depth + 1
-        LEAF_NODE_CONTAINER.concat(children_array)
+        NODE_CONTAINER.concat(children_array)
         children_array.each do |child|
           child["parent_id"] = parent_id
           find_and_save_all_children(child["id"], children_depth)
@@ -58,7 +58,7 @@ module Runner
       find_and_save_all_children(root_node, 0)
     end
     File.open("./jd_areas.json", "w") do |file|
-      file.write JSON.generate(LEAF_NODE_CONTAINER)
+      file.write JSON.generate(NODE_CONTAINER)
     end
     puts "----------END-----------"
   end
