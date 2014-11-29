@@ -37,7 +37,7 @@ module Runner
       url = "#{URL_PREFIX}#{parent_id}"
       parse_result = get_page_then_parse_until_succeed(url)
       if parse_result.class == Array and not parse_result.empty?
-        puts "Accepted"
+        puts "Child Accepted"
         children_array = parse_result
         children_depth = parent_depth + 1
         NODE_CONTAINER.concat(children_array)
@@ -46,7 +46,8 @@ module Runner
           find_and_save_all_children(child["id"], children_depth)
         end
       else
-        puts "Rejected"
+        puts "Child Rejected and also reject all sublings consequently to reduce time."
+        REJECT_NODES_LIST.concat(children_array)
       end
     end
   end
