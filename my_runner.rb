@@ -45,9 +45,8 @@ module Runner
       puts "Got all children of parent"
       children_array = parse_result
       children_height = parent_height + 1
-      children_array.each do |child|
-        child["parent_id"] = parent["id"]
-      end
+      children_array.map { |child| child["parent_id"] = parent["id"] }
+      binding.pry
       NODE_CONTAINER.concat(children_array)
 
       if (children_height >= 0) and (children_height < MAX_HEIGHT)
@@ -61,9 +60,9 @@ module Runner
       # NOTICE we assume if a node has no child, then the node's siblings have no child too.
       # This is to optimize the traversing since the majority of time is spent on checking bad nodes.
       puts "Parent has no child. Assume so are the parent's sublings."
+      binding.pry
       unless parent["parent_id"].nil?
-        # TODO: how to get parent siblings
-        parent_siblings = nodes whose parent_id equals parent["parent_id"]
+        parent_siblings = NODE_CONTAINER.select { |node| node["parent_id"] == parent["parent_id"] }
         NODE_BLACK_LIST.concat(parent_siblings)
       end
     else
