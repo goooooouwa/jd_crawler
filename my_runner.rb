@@ -9,7 +9,7 @@ module Runner
 
   def self.get_page_until_succeed(url)
     begin
-      puts "[GET] #{url.inspect}"
+      puts "GET #{url.inspect}"
       return AGENT.get(url)
     rescue => e
       puts e.inspect
@@ -23,7 +23,7 @@ module Runner
 
     begin
       parse_result = JSON.parse(page.body)
-      puts "Parse Result: #{parse_result.inspect}"
+      puts "Parse result: #{parse_result.inspect}"
       return parse_result
     rescue => e
       puts e.inspect
@@ -33,29 +33,16 @@ module Runner
   end
 
   def self.find_and_save_all_children(parent, parent_height)
+    puts "Parent: #{parent}"
     parse_result = get_page_then_parse_until_succeed("#{URL_PREFIX}#{parent['id']}")
     if parse_result.class == Array and not parse_result.empty?
-      # 1. got all children of parent
-      puts "[CHILDREN] Got all children of parent."
-      children_array = parse_result
-      children_array.map { |child| child["parent_id"] = parent["id"] }
-      CHILDREN_NODE_CONTAINER.concat(children_array)
+      puts "All children of parent found."
+      CHILDREN_NODE_CONTAINER.concat(parse_result.map { |child| child["parent_id"] = parent["id"] })
 
       children_height = parent_height + 1
       if (children_height >= 0) and (children_height < MAX_HEIGHT)
-        # NOTE this should not happen since MAX_HEIGHT is set to 1
-        binding.pry
-        children_array.each do |child|
-          find_and_save_all_children(child, children_height)
-        end
+        children_array.each { |child| find_and_save_all_children(child, children_height) }
       end
-    elsif (parse_result.class == Hash) or (parse_result.class == Array and parse_result.empty?)
-      # 2. got one child or an empty array which indicates the parent has no child.
-      puts "[CHILDLESS] parent has no child."
-    else
-      # 3. unknown
-      puts "oops"
-      binding.pry
     end
   end
 
@@ -63,10 +50,7 @@ module Runner
     puts "---------START-----------"
     root_node_container = JSON.parse(File.open("./root_nodes.json").read())
     if MAX_HEIGHT > 0
-      root_node_container.each do |root_node|
-        puts "root: #{root_node}"
-        find_and_save_all_children(root_node, 0)
-      end
+      root_node_container.each { |root_node| find_and_save_all_children(root_node, 0) }
     end
 
     File.open("./jd_areas.json", "w") do |file|
