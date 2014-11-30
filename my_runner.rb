@@ -10,7 +10,7 @@ module Runner
 
   def self.get_page_until_succeed(url)
     begin
-      puts "URL: #{url.inspect}"
+      puts "[GET] #{url.inspect}"
       return AGENT.get(url)
     rescue => e
       puts e.inspect
@@ -34,12 +34,15 @@ module Runner
   end
 
   def self.find_and_save_all_children(parent, parent_height)
-    return if NODE_BLACK_LIST.include?(parent)
+    if NODE_BLACK_LIST.include?(parent)
+      puts "[SKIPPED] Childless parent skipped."
+      return
+    end
 
     parse_result = get_page_then_parse_until_succeed("#{URL_PREFIX}#{parent['id']}")
     if parse_result.class == Array and not parse_result.empty?
       # 1. got all children of parent
-      puts "Got all children of parent."
+      puts "[CHILDREN] Got all children of parent."
       children_array = parse_result
       children_height = parent_height + 1
       children_array.map { |child| child["parent_id"] = parent["id"] }
@@ -55,7 +58,7 @@ module Runner
       # 2. got one child or an empty array which indicates the parent has no child.
       # NOTICE we assume if a node has no child, then the node's siblings have no child too.
       # This is to optimize the traversing since the majority of time is spent on checking bad nodes.
-      puts "Parent has no child. Assume so are the parent's sublings."
+      puts "[CHILDLESS] Parent has no child. Assume so are the parent's sublings."
       unless parent["parent_id"].nil?
         parent_siblings = NODE_CONTAINER.select { |node| node["parent_id"] == parent["parent_id"] }
         NODE_BLACK_LIST.concat(parent_siblings)
