@@ -82,6 +82,9 @@ module Runner
     File.open("./jd_areas.json", "w") do |file|
       file.write JSON.generate(NODE_CONTAINER)
     end
+    File.open("./node_black_list.json", "w") do |file|
+      file.write JSON.generate(NODE_BLACK_LIST)
+    end
     puts "----------END-----------"
   end
 end
