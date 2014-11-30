@@ -7,6 +7,7 @@ module Runner
   CHILDREN_NODE_CONTAINER = []
   NODE_BLACK_LIST = []
   MAX_HEIGHT = 1
+  USE_BLACK_LIST = false
   AGENT = Mechanize.new
 
   def self.get_page_until_succeed(url)
@@ -35,7 +36,7 @@ module Runner
   end
 
   def self.find_and_save_all_children(parent, parent_height)
-    if NODE_BLACK_LIST.include?(parent)
+    if USE_BLACK_LIST and NODE_BLACK_LIST.include?(parent)
       puts "[SKIPPED] Childless parent skipped."
       return
     end
