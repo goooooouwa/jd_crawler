@@ -61,7 +61,7 @@ module Runner
 
   def self.run
     puts "---------START-----------"
-    root_node_container.concat(JSON.parse(File.open("./root_nodes.json").read()))
+    root_node_container = JSON.parse(File.open("./root_nodes.json").read())
     if MAX_HEIGHT > 0
       root_node_container.each do |root_node|
         puts "root: #{root_node}"
