@@ -3,7 +3,8 @@ require 'pry'
 
 module Runner
   URL_PREFIX = "http://d.360buy.com/area/get?fid="
-  NODE_CONTAINER = []
+  ROOT_NODE_CONTAINER = []
+  CHILDREN_NODE_CONTAINER = []
   NODE_BLACK_LIST = []
   MAX_HEIGHT = 1
   AGENT = Mechanize.new
@@ -45,11 +46,12 @@ module Runner
       puts "[CHILDREN] Got all children of parent."
       children_array = parse_result
       children_array.map { |child| child["parent_id"] = parent["id"] }
-      NODE_CONTAINER.concat(children_array)
+      CHILDREN_NODE_CONTAINER.concat(children_array)
 
       children_height = parent_height + 1
       if (children_height >= 0) and (children_height < MAX_HEIGHT)
         # NOTE this should not happen since MAX_HEIGHT is set to 1
+        binding.pry
         children_array.each do |child|
           find_and_save_all_children(child, children_height)
         end
@@ -60,7 +62,7 @@ module Runner
       # This is to optimize the traversing since the majority of time is spent on checking childless nodes.
       puts "[CHILDLESS] Parent has no child. Assume so are the parent's sublings."
       unless parent["parent_id"].nil?
-        parent_siblings = NODE_CONTAINER.select { |node| node["parent_id"] == parent["parent_id"] }
+        parent_siblings = ROOT_NODE_CONTAINER.select { |node| node["parent_id"] == parent["parent_id"] }
         NODE_BLACK_LIST.concat(parent_siblings)
       end
     else
@@ -72,15 +74,16 @@ module Runner
 
   def self.run
     puts "---------START-----------"
-    root_nodes = JSON.parse(File.open("./root_nodes.json").read())
+    ROOT_NODE_CONTAINER.concat(JSON.parse(File.open("./root_nodes.json").read()))
     if MAX_HEIGHT > 0
-      root_nodes.each do |root_node|
+      ROOT_NODE_CONTAINER.each do |root_node|
+        puts "root: #{root_node}"
         find_and_save_all_children(root_node, 0)
       end
     end
 
     File.open("./jd_areas.json", "w") do |file|
-      file.write JSON.generate(NODE_CONTAINER)
+      file.write JSON.generate(CHILDREN_NODE_CONTAINER)
     end
     File.open("./node_black_list.json", "w") do |file|
       file.write JSON.generate(NODE_BLACK_LIST)
