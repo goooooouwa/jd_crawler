@@ -4,7 +4,7 @@ require 'pry'
 module Runner
   URL_PREFIX = "http://d.360buy.com/area/get?fid="
   CHILDREN_NODE_CONTAINER = []
-  MAX_HEIGHT = 1
+  MAX_HEIGHT = 3
   AGENT = Mechanize.new
 
   def self.get_page_until_succeed(url)
@@ -41,7 +41,7 @@ module Runner
 
       children_height = parent_height + 1
       if (children_height >= 0) and (children_height < MAX_HEIGHT)
-        children_array.each { |child| find_and_save_all_children(child, children_height) }
+        parse_result.each { |child| find_and_save_all_children(child, children_height) }
       end
     end
   end
