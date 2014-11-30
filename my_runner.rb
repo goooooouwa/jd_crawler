@@ -61,7 +61,7 @@ module Runner
       # 2. got one child or an empty array which indicates the parent has no child.
       # NOTE we assume if a node has no child, then the node's siblings have no child too.
       # This is to optimize the traversing since the majority of time is spent on checking childless nodes.
-      puts "[CHILDLESS] Parent has no child. Assume so are the parent's sublings."
+      puts "[CHILDLESS] Parent has no child."
       unless parent["parent_id"].nil?
         parent_siblings = ROOT_NODE_CONTAINER.select { |node| node["parent_id"] == parent["parent_id"] }
         NODE_BLACK_LIST.concat(parent_siblings)
@@ -86,8 +86,10 @@ module Runner
     File.open("./jd_areas.json", "w") do |file|
       file.write JSON.generate(CHILDREN_NODE_CONTAINER)
     end
-    File.open("./node_black_list.json", "w") do |file|
-      file.write JSON.generate(NODE_BLACK_LIST)
+    if USE_BLACK_LIST
+      File.open("./node_black_list.json", "w") do |file|
+        file.write JSON.generate(NODE_BLACK_LIST)
+      end
     end
     puts "----------END-----------"
   end
