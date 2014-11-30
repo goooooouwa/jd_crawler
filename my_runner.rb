@@ -44,27 +44,27 @@ module Runner
       # 1. got all children of parent
       puts "[CHILDREN] Got all children of parent."
       children_array = parse_result
-      children_height = parent_height + 1
       children_array.map { |child| child["parent_id"] = parent["id"] }
       NODE_CONTAINER.concat(children_array)
 
+      children_height = parent_height + 1
       if (children_height >= 0) and (children_height < MAX_HEIGHT)
-        # if allowed to go deeper
+        # NOTE this should not happen since MAX_HEIGHT is set to 1
         children_array.each do |child|
           find_and_save_all_children(child, children_height)
         end
       end
     elsif (parse_result.class == Hash) or (parse_result.class == Array and parse_result.empty?)
       # 2. got one child or an empty array which indicates the parent has no child.
-      # NOTICE we assume if a node has no child, then the node's siblings have no child too.
-      # This is to optimize the traversing since the majority of time is spent on checking bad nodes.
+      # NOTE we assume if a node has no child, then the node's siblings have no child too.
+      # This is to optimize the traversing since the majority of time is spent on checking childless nodes.
       puts "[CHILDLESS] Parent has no child. Assume so are the parent's sublings."
       unless parent["parent_id"].nil?
         parent_siblings = NODE_CONTAINER.select { |node| node["parent_id"] == parent["parent_id"] }
         NODE_BLACK_LIST.concat(parent_siblings)
       end
     else
-      # 4. unknown
+      # 3. unknown
       puts "oops"
       binding.pry
     end
@@ -78,6 +78,7 @@ module Runner
         find_and_save_all_children(root_node, 0)
       end
     end
+
     File.open("./jd_areas.json", "w") do |file|
       file.write JSON.generate(NODE_CONTAINER)
     end
