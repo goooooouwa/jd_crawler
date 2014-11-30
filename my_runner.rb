@@ -34,19 +34,15 @@ module Runner
   end
 
   def self.find_and_save_all_children(parent, parent_height)
-    if NODE_BLACK_LIST.include?(parent)
-      binding.pry
-      return
-    end
+    return if NODE_BLACK_LIST.include?(parent)
 
     parse_result = get_page_then_parse_until_succeed("#{URL_PREFIX}#{parent['id']}")
     if parse_result.class == Array and not parse_result.empty?
       # 1. got all children of parent
-      puts "Got all children of parent"
+      puts "Got all children of parent."
       children_array = parse_result
       children_height = parent_height + 1
       children_array.map { |child| child["parent_id"] = parent["id"] }
-      binding.pry
       NODE_CONTAINER.concat(children_array)
 
       if (children_height >= 0) and (children_height < MAX_HEIGHT)
@@ -60,7 +56,6 @@ module Runner
       # NOTICE we assume if a node has no child, then the node's siblings have no child too.
       # This is to optimize the traversing since the majority of time is spent on checking bad nodes.
       puts "Parent has no child. Assume so are the parent's sublings."
-      binding.pry
       unless parent["parent_id"].nil?
         parent_siblings = NODE_CONTAINER.select { |node| node["parent_id"] == parent["parent_id"] }
         NODE_BLACK_LIST.concat(parent_siblings)
