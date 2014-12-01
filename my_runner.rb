@@ -4,7 +4,7 @@ require 'pry'
 module Runner
   URL_PREFIX = "http://d.360buy.com/area/get?fid="
   CHILDREN_NODE_CONTAINER = []
-  MAX_HEIGHT = 3
+  MAX_HEIGHT = 1
   AGENT = Mechanize.new
 
   def self.get_page_until_succeed(url)
