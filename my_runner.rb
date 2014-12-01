@@ -3,8 +3,7 @@ require 'pry'
 
 module Runner
   URL_PREFIX = "http://d.360buy.com/area/get?fid="
-  CHILDREN_NODE_CONTAINER = []
-  MAX_HEIGHT = 3
+  NODE_CONTAINER = JSON.parse(File.open("./root_nodes.json").read())
   AGENT = Mechanize.new
 
   def self.get_page_until_succeed(url)
@@ -32,29 +31,21 @@ module Runner
     end
   end
 
-  def self.find_and_save_all_children(parent, parent_height)
+  def self.find_and_save_all_children(parent)
     puts "Parent: #{parent}"
     parse_result = get_page_then_parse_until_succeed("#{URL_PREFIX}#{parent['id']}")
     if parse_result.class == Array and not parse_result.empty?
       puts "All children of parent found."
-      CHILDREN_NODE_CONTAINER.concat(parse_result.map { |child| child["parent_id"] = parent["id"] })
-
-      children_height = parent_height + 1
-      if (children_height >= 0) and (children_height < MAX_HEIGHT)
-        parse_result.each { |child| find_and_save_all_children(child, children_height) }
-      end
+      NODE_CONTAINER.concat(parse_result.map { |child| child["parent_id"] = parent["id"] })
     end
   end
 
   def self.run
     puts "---------START-----------"
-    root_node_container = JSON.parse(File.open("./root_nodes.json").read())
-    if MAX_HEIGHT > 0
-      root_node_container.each { |root_node| find_and_save_all_children(root_node, 0) }
-    end
+    NODE_CONTAINER.each { |node| find_and_save_all_children(node) }
 
     File.open("./jd_areas.json", "w") do |file|
-      file.write JSON.generate(CHILDREN_NODE_CONTAINER)
+      file.write JSON.generate(NODE_CONTAINER)
     end
     puts "----------END-----------"
   end
