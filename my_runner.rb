@@ -36,7 +36,7 @@ module Runner
     parse_result = get_page_then_parse_until_succeed("#{URL_PREFIX}#{parent['id']}")
     if parse_result.class == Array and not parse_result.empty?
       puts "All children of parent found."
-      NODE_CONTAINER.concat(parse_result.map { |child| child["parent_id"] = parent["id"] })
+      NODE_CONTAINER.concat(parse_result.each { |child| child["parent_id"] = parent["id"] })
     end
   end
 
