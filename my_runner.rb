@@ -37,7 +37,7 @@ module Runner
     parse_result = get_page_then_parse_until_succeed("#{URL_PREFIX}#{parent['id']}")
     if parse_result.class == Array and not parse_result.empty?
       puts "All children of parent found."
-      CHILDREN_NODE_CONTAINER.concat(parse_result.map { |child| child["parent_id"] = parent["id"] })
+      CHILDREN_NODE_CONTAINER.concat(parse_result.each { |child| child["parent_id"] = parent["id"] })
 
       children_height = parent_height + 1
       if (children_height >= 0) and (children_height < MAX_HEIGHT)
